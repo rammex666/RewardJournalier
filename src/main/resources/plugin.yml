@@ -2,3 +2,6 @@ name: RewardJournaliers
 main: org.rammex.rewardjournaliers.RewardJournaliers
 version: 1.0
 api-version: 1.8
+commands:
+    rd:
+        description: Commande pour obtenir sa récompense journalière
