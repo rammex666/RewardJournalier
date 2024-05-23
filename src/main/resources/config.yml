@@ -1,0 +1,10 @@
+# PLUGIN BY .rammex
+# bien suivre le modèle
+# plusieurs commandes peuvent êtres executées
+
+rewards:
+    exemple1:
+      name: "&6Premier jour"
+      day: 1
+      commands:
+        - "give %player% minecraft:diamond 1"
