@@ -1,10 +1,29 @@
 # PLUGIN BY .rammex
 # bien suivre le modèle
 # plusieurs commandes peuvent êtres executées
+# le 1 détermine le jour de la récompense
+# placeholder : "%player%
+# type : hdb ( headid ) ; normal ( material )
+
+# NE PAS TOUCHER ( SI VOUS TOUCHEZ JE NE SERAIS RESPONSABLE DE BUG POSSIBLES ) !
+JourActuel : 0
+DateStart :
+# NE PAS TOUCHER !
+
+premiumperm: "rewardjournaliers.premium"
+
+rewardspremium:
+  1:
+    name: "&6Premier jour"
+    type: "hdb"
+    headid: "7129"
+    commands:
+      - "give %player% minecraft:diamond 1"
 
 rewards:
-    exemple1:
+    1:
       name: "&6Premier jour"
-      day: 1
+      type: "normal"
+      material: "DIAMOND"
       commands:
         - "give %player% minecraft:diamond 1"

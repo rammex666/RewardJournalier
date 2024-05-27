@@ -1,7 +1,9 @@
 name: RewardJournaliers
-main: org.rammex.rewardjournaliers.RewardJournaliers
+main: org.rammex.Main
 version: 1.0
 api-version: 1.8
+softdepend:
+    - HeadDatabase
 commands:
     rd:
         description: Commande pour obtenir sa récompense journalière

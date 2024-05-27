@@ -15,18 +15,59 @@ public class PlayerManager implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        ((RewardCommand) this.plugin.getCommand("rd").getExecutor()).loadPlayTime(event.getPlayer());
         String playerName = event.getPlayer().getName();
-        if (!plugin.getPlayerData().contains("players." + playerName)) {
-            plugin.getPlayerData().set("players." + playerName + ".day", 1);
-            plugin.savePlayerData();
+        if(event.getPlayer().hasPlayedBefore()){
+            try {
+                if (plugin.getPlayerData() != null && plugin.getPlayerData().contains("players." + playerName)) {
+                    Integer lasttime = plugin.getPlayerData().getInt("players." + playerName + ".lasttime");
+                    RewardCommand.loadPlayTime(event.getPlayer());
+                } else {
+                    try{
+                        if (plugin.getPlayerData() != null) {
+                            plugin.getPlayerData().createSection("players." + playerName);
+                            plugin.savePlayerData();
+                            plugin.reloadPlayerData();
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    if (plugin.getPlayerData() != null) {
+                        plugin.getPlayerData().set("players." + playerName + ".day", 1);
+                        plugin.getPlayerData().set("players." + playerName + ".hasreward", false);
+                        plugin.getPlayerData().set("players." + playerName + ".haspremiumreward", false);
+                        plugin.getPlayerData().set("players." + playerName + ".lasttime", 0);
+                        plugin.savePlayerData(); // Save the data after modifying it
+                        plugin.reloadPlayerData();
+                    }
+                    RewardCommand.playTime.put(event.getPlayer(), System.currentTimeMillis());
+                    if(event.getPlayer().hasPermission(this.plugin.getConfig().getString("premiumperm"))){
+                        RewardCommand.playTimePremium.put(event.getPlayer(), System.currentTimeMillis());
+                    }
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        } else {
+            // Create a new entry for the new player
+            if (plugin.getPlayerData() != null) {
+                plugin.getPlayerData().set("players." + playerName + ".day", 1);
+                plugin.getPlayerData().set("players." + playerName + ".hasreward", false);
+                plugin.getPlayerData().set("players." + playerName + ".haspremiumreward", false);
+                plugin.getPlayerData().set("players." + playerName + ".lasttime", 0);
+                plugin.savePlayerData(); // Save the data after modifying it
+                plugin.reloadPlayerData();
+            }
+            RewardCommand.playTime.put(event.getPlayer(), System.currentTimeMillis());
         }
+
+        plugin.savePlayerData();
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        ((RewardCommand) this.plugin.getCommand("rd").getExecutor()).savePlayTime(event.getPlayer());
-
+        RewardCommand.savePlayTime(event.getPlayer());
+       RewardCommand.removePlayTime(event.getPlayer());
     }
 
 }

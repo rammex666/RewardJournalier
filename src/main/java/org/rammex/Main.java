@@ -5,15 +5,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rammex.commands.RewardCommand;
 import org.rammex.event.PlayerManager;
-import org.rammex.utils.DatabaseManager;
+import org.rammex.gui.RdGui;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 public final class Main extends JavaPlugin {
 
     private static Main instance;
-    private DatabaseManager databaseManager;
     private FileConfiguration playerData;
+    private File playerDataFile;
 
     public static Main getInstance() {
         return instance;
@@ -22,31 +26,34 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        databaseManager = new DatabaseManager();
-        databaseManager.connect();
 
         loadPlayerData();
+        reloadPlayerData(); // Add this line
         saveDefaultConfig();
 
         this.getServer().getPluginManager().registerEvents(new PlayerManager(this), this);
+        this.getServer().getPluginManager().registerEvents(new RdGui(this), this);
         this.getCommand("rd").setExecutor(new RewardCommand(this));
+        LocalDate today = LocalDate.now();
+        String startDateString = getConfig().getString("DateStart");
+        LocalDate startDate = null;
+        if (startDateString != null) {
+            startDate = LocalDate.parse(startDateString);
+        } else {
+            startDate = LocalDate.now();
+        }
     }
 
     @Override
     public void onDisable() {
-        databaseManager.disconnect();
     }
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
 
     private void loadPlayerData() {
-        File playerDataFile = new File(getDataFolder()+"/data", "playerdata.yml");
+        playerDataFile = new File(getDataFolder(), "playerdata.yml");
         if (!playerDataFile.exists()) {
-            saveResource("data/playerdata.yml", false);
+            saveResource("playerdata.yml", false);
         }
-        YamlConfiguration playerdata = YamlConfiguration.loadConfiguration(playerDataFile);
     }
 
     public FileConfiguration getPlayerData() {
@@ -54,11 +61,24 @@ public final class Main extends JavaPlugin {
     }
 
     public void savePlayerData() {
-        try {
-            playerData.save(new File(getDataFolder()+"/data", "playerdata.yml"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (playerData != null && getDataFolder() != null) {
+            try {
+                playerData.save(new File(getDataFolder(), "playerdata.yml"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Log an error message or throw an exception
+            System.out.println("Error: playerData or getDataFolder() is null");
         }
+    }
+
+    public void reloadPlayerData() {
+        playerData = YamlConfiguration.loadConfiguration(playerDataFile);
+
+        Reader defConfigStream = new InputStreamReader(getResource("playerdata.yml"), StandardCharsets.UTF_8);
+        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+        playerData.setDefaults(defConfig);
     }
 
 
