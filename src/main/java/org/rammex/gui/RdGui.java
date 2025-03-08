@@ -74,6 +74,8 @@ public class RdGui implements InventoryHolder, Listener {
             }
         }
         if(clickedItem.getType() == Material.STAINED_GLASS_PANE) {
+            e.setCancelled(true);
+            e.setResult(InventoryClickEvent.Result.DENY);
             return;
         }
 

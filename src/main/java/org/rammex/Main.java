@@ -28,7 +28,7 @@ public final class Main extends JavaPlugin {
         instance = this;
 
         loadPlayerData();
-        reloadPlayerData(); // Add this line
+        reloadPlayerData();
         saveDefaultConfig();
 
         this.getServer().getPluginManager().registerEvents(new PlayerManager(this), this);
